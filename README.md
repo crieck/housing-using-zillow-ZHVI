@@ -1,0 +1,1 @@
+This repository is for a group project utilizing data from Zillow to build a dashboard visualization of housing market data. Specifically, we will be using the Zillow Home Value Index (ZHVI) as our data source to build a simple web application that analyzes different housing market metrics at various levels of granularity.
