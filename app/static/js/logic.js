@@ -78,9 +78,7 @@ d3.json(geojson_data, function(data) {
           // Added code here
         layers[feature.properties.Name] = layer;
         // Popup with region name, number of listings and median sqft
-        layer.bindPopup("<h3>" + feature.properties.Name + "</h3> <hr> \
-        <h4>Number of listings: " + feature.properties.Number_of_Listings + "</h4> <hr> \
-        <h4>Median $ per square foot: " + feature.properties.Median_sqft_Value + '</h4>');
+        layer.bindPopup("<h3>" + feature.properties.Name + "</h3>");
 
     }
   }).addTo(map);
@@ -108,8 +106,8 @@ function updatePopup(year_json) {
 
           // Giving each feature a pop-up with information pertinent to it
           layer.setPopupContent("<h3>" + region + "</h3> <hr> \
-          <h4>Number of listings: " + response[i].Number_of_Listings + "</h4> <hr> \
-          <h4>Median $/sqft: " + response[i].Median_sqft_Value + '</h4>');
+          <h4>Listings: " + response[i].Number_of_Listings + "</h4> <hr> \
+          <h4>$/sqft: " + response[i].Median_sqft_Value + '</h4>');
 
           layer.setStyle({fillOpacity :0.75});
       };
@@ -142,12 +140,12 @@ d3.select("#timeslide").on("input", function() {
   console.log(this.value);
 });
 
-// Function that will change opacity if regions do not have housing data
-function chooseOpacity(inventory) {
-  switch (inventory) {
-  case -1:
-    return 0.5;
-  default:
-    return 0.75;
-  }
-}
+// // Function that will change opacity if regions do not have housing data
+// function chooseOpacity(inventory) {
+//   switch (inventory) {
+//   case -1:
+//     return 0.5;
+//   default:
+//     return 0.75;
+//   }
+// }
