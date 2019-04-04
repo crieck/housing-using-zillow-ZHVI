@@ -65,6 +65,10 @@ def charts():
 def map():
     return render_template('map.html')
 
+@app.route('/test')
+def test():
+	return render_template('index.html')
+
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -129,17 +133,16 @@ def monthly_inventory(year,month):
 
 @app.route('/data/geo_json')
 def geo_json():
-	"""temporary testing data"""
-	res = requests.get('https://docs.mapbox.com/help/data/stations.geojson')
+	# pull geojson file, load into json
+	res = requests.get('https://raw.githubusercontent.com/crieck/housing-using-zillow-ZHVI/feature-map/map-features/leaflet-mn-cities/static/js/mn-city-bounds.geojson')
 	print(res)
 	response = res.json()
 	print(response)
 
 	# setting values to -1 to allow for adding data in javascript code when updating map
 	for place in response['features']:
-		place['properties']['RegionName'] = -1
 		place['properties']['Number_of_Listings'] = -1
-		place['properties']['Median_sqft_Value'] = -1
+		place['properties']['Median_sqft_Value'] = -1	
 
 	return jsonify(response)
 

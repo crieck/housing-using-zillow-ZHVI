@@ -1,0 +1,16 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+/* Added code here */
+#sliderContainer {
+  text-align: center;
+  position: relative;
+}
+
+/* Added code here */
+body,
+html {
+  height: 100%;
+}

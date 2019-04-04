@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>TITLE</title>
+
+    <!-- Leaflet JS & CSS from CDN-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
+    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
+    integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
+    crossorigin=""></script>
+    <!-- d3 JavaScript -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+
+  </head>
+  <body>
+    <!-- Added code here -->
+    <!-- Container for slider, can be any size I think -->
+      <div class="container">
+          <h2>Select Year</h2>
+          <div class="row align-items-center">
+            <div class="col-md-9">
+                <div id="sliderContainer">
+                    <input id="timeslide" type="range" min="2012" max="2019" value="2019" step="1"/><br>
+                    <span id="range">2019</span>
+                </div>
+            </div>
+          </div>
+          
+      <!-- Added code here -->
+      <div class="row">
+        <div class="col-md-12">
+          <!-- map div -->
+          <div id="map" style="height:600px;"></div>
+        </div>
+      </div>
+      </div><!-- /.container -->
+
+    
+<!-- Added code here -->
+    <!-- API key -->
+    <!-- <script type="text/javascript" src="static/js/config.js"></script> -->
+    <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+    <!-- JS  -->
+    <!-- <script type="text/javascript" src="static/js/logic.js"></script> -->
+
+    <!-- functions to load data into charts and maps -->
+    <script src="{{ url_for('static', filename='js/logic.js') }}"></script>
+
+    <!-- scripts -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
