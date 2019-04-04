@@ -83,10 +83,7 @@ d3.json(geojson_data, function(data) {
         <h4>Median $ per square foot: " + feature.properties.Median_sqft_Value + '</h4>');
 
     }
-  });
-  
-  // Added code here, not sure if layer would add to map if just defined as variable
-  geo_layer.addTo(map);
+  }).addTo(map);
 
 });
 
@@ -113,6 +110,8 @@ function updatePopup(year_json) {
           layer.setPopupContent("<h3>" + region + "</h3> <hr> \
           <h4>Number of listings: " + response[i].Number_of_Listings + "</h4> <hr> \
           <h4>Median $/sqft: " + response[i].Median_sqft_Value + '</h4>');
+
+          layer.setStyle({fillOpacity :0.75});
       };
   });
 
