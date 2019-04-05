@@ -2,8 +2,19 @@ from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 import requests
+import dash
+from dash.dependencies import Input, Output
+import dash_core_components as dcc
+import dash_html_components as html
 
-app = Flask(__name__)
+import pandas as pd
+import time
+import os
+
+app_flask = Flask(__name__)
+
+app_dash = dash.Dash(__name__, server=app_flask, url_base_pathname='/dashapp/')
+app_dash.scripts.config.serve_locally = False
 
 # Use this to counter warning
 ## From stack-overflow:
@@ -11,14 +22,14 @@ app = Flask(__name__)
 ### To do this, it tracks modifications to the SQLAlchemy session. 
 ### This takes extra resources, so the option SQLALCHEMY_TRACK_MODIFICATIONS allows you to disable the 
 ### modification tracking system.
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app_flask.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #################################################
 # Database Setup
 #################################################
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data/zdat.sqlite"
-db = SQLAlchemy(app)
+app_flask.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data/zdat.sqlite"
+db = SQLAlchemy(app_flask)
 
 #################################################
 # Declare Model (Table schema)
@@ -52,28 +63,28 @@ class HousingData(db.Model):
 
 
 #Application routes
-@app.route('/')
-@app.route('/index')
+@app_flask.route('/')
+@app_flask.route('/index')
 def index():
     return render_template('home.html')
 
-@app.route('/charts')
+@app_flask.route('/charts')
 def charts():
     return render_template('charts.html')
 
-@app.route('/map')
+@app_flask.route('/map')
 def map():
     return render_template('map.html')
 
-@app.route('/test')
+@app_flask.route('/test')
 def test():
 	return render_template('index.html')
 
-@app.route('/about')
+@app_flask.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/data/inventory/<year>')
+@app_flask.route('/data/inventory/<year>')
 def yearly_inventory(year):
 	""" Get number of listings and inventory for a given year 
 		Return as a json dictionary """
@@ -102,7 +113,7 @@ def yearly_inventory(year):
 	print(json_results)
 	return jsonify(json_results)
 
-@app.route('/data/inventory/<month>/<year>')
+@app_flask.route('/data/inventory/<month>/<year>')
 def monthly_inventory(year,month):
 	""" Get number of listings and inventory for a given year and month
 		Return as a json dictionary """
@@ -131,7 +142,7 @@ def monthly_inventory(year,month):
 	print(json_results)
 	return jsonify(json_results)
 
-@app.route('/data/geo_json')
+@app_flask.route('/data/geo_json')
 def geo_json():
 	# pull geojson file, load into json
 	res = requests.get('https://raw.githubusercontent.com/crieck/housing-using-zillow-ZHVI/feature-map/map-features/leaflet-mn-cities/static/js/mn-city-bounds.geojson')
@@ -146,6 +157,64 @@ def geo_json():
 
 	return jsonify(response)
 
+#################################################
+# Dash setup and data
+#################################################
+
+@app_flask.route('/zillow_dashboard') 
+def render_dashboard():
+    return flask.redirect('/dashapp')
+
+df=pd.read_sql_query('select * from zilloData;',db.session.bind)
+
+app_dash.layout = html.Div([
+    html.H2('Zillo Data'),
+    dcc.Dropdown(
+        id='my-dropdown',
+        options=[{'label': i, 'value': i} for i in df['RegionName']],
+        value='Minneapolis'
+    ),
+    dcc.Graph(id='1graph'),
+    dcc.Graph(id='2graph')
+], className="container")
+
+@app_dash.callback(Output('1graph', 'figure'),
+              [Input('my-dropdown', 'value')])
+
+def update_graph(selected_dropdown_value):
+    dff = df[df['RegionName'] == selected_dropdown_value]
+    return {
+        'data': [{
+            'x': dff.Date,
+            'y': dff.Number_of_Listings,
+            'line': {
+                'width': 3,
+                'shape': 'spline'
+            }
+        }],
+            'layout': {
+                'title': 'Number_of_Listings'
+            }
+
+    }
+@app_dash.callback(Output('2graph', 'figure'),
+              [Input('my-dropdown', 'value')])
+
+def update_graph(selected_dropdown_value):
+    dff = df[df['RegionName'] == selected_dropdown_value]
+    return {
+        'data': [{
+            'x': dff.Date,
+            'y': dff.Median_sqft_Value,
+            'line': {
+                'width': 3,
+                'shape': 'spline'
+            }
+        }],
+            'layout': {
+                'title': 'Median_sqft_Value'
+            }
+    }
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app_flask.run(debug=True)
